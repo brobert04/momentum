@@ -6,39 +6,53 @@ import Image from "next/image";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import CustomInput from "./CustomInput";
 
 import { authFormSchema } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
-const AuthForm = ({ type }: { type: String }) => {
+const AuthForm = ({ type }: { type: string }) => {
+  const router = useRouter();
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const form = useForm<z.infer<typeof authFormSchema>>({
-    resolver: zodResolver(authFormSchema),
+  const formSchema = authFormSchema(type);
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
       password: "",
     },
   });
 
-  function onSubmit(values: z.infer<typeof authFormSchema>) {
-    setIsLoading(true);
-    console.log(values);
-    setIsLoading(false);
-  }
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    try {
+      // if (type === "sign-up") {
+      //   // const newUser = await signUp(data);
+      //   // setUser(newUser);
+      //   }
+      // }
+      // if (type === "sign-in") {
+      //   // const res = await signIn({
+      //   //   email: "data.email",
+      //   //   'password': "data.password",
+      //   // });
+
+      //   // if(res){
+      //   //   router.push('/');
+      //   // }
+      // }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <section className="auth-form">
       <header className="flex flex-col gap-5 md:gap-8">
@@ -70,6 +84,73 @@ const AuthForm = ({ type }: { type: String }) => {
         <>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              {type === "sign-up" && (
+                <>
+                  <div className="flex gap-4">
+                    <CustomInput
+                      control={form.control}
+                      name="firstName"
+                      label="First Name"
+                      placeholder="Enter your first name"
+                      type="text"
+                    />
+                    <CustomInput
+                      control={form.control}
+                      name="lastName"
+                      label="Last Name"
+                      placeholder="Enter your last name"
+                      type="text"
+                    />
+                  </div>
+
+                  <CustomInput
+                    control={form.control}
+                    name="address1"
+                    label="Address"
+                    placeholder="Enter your address"
+                    type="text"
+                  />
+                  <CustomInput
+                    control={form.control}
+                    name="city"
+                    label="City"
+                    placeholder="Enter your city"
+                    type="text"
+                  />
+                  <div className="flex gap-4">
+                    <CustomInput
+                      control={form.control}
+                      name="state"
+                      label="State"
+                      placeholder="Example: NY"
+                      type="text"
+                    />
+                    <CustomInput
+                      control={form.control}
+                      name="postalCode"
+                      label="Postal Code"
+                      placeholder="Example: 920016"
+                      type="text"
+                    />
+                  </div>
+                  <div className="flex gap-4">
+                    <CustomInput
+                      control={form.control}
+                      name="dateOfBirth"
+                      label="Date of Birth"
+                      placeholder="YYYY-MM-DD"
+                      type="text"
+                    />
+                    <CustomInput
+                      control={form.control}
+                      name="ssn"
+                      label="SSN"
+                      placeholder="Example: 1234"
+                      type="text"
+                    />
+                  </div>
+                </>
+              )}
               <CustomInput
                 control={form.control}
                 name="email"
